@@ -1,0 +1,31 @@
+api_gateway_api_tags = {
+  "Owner" = "Andrea Cannuni"
+  "Team"  = "My Team"
+}
+
+app_key_dev = "base64:etTidyLVfOQrlBlbtjpv+TNfpiw29LfbXY/oFk1oNw0="
+
+app_key_prod = "base64:MMDhu0pkmKK90aGhIg4FqSokY9jxD9uILmerJCzwEU0="
+
+iam_role_tags = {
+  "Owner" = "Andrea Cannuni"
+  "STAGE" = "dev"
+  "Team"  = "My Team"
+}
+
+lambda_function_tags = {
+  "Owner" = "Andrea Cannuni"
+  "STAGE" = "dev"
+  "Team"  = "My Team"
+}
+
+s3_bucket_storage_tags = {
+  "Owner" = "Andrea Cannuni"
+  "STAGE" = "dev"
+  "Team"  = "My Team"
+}
+
+ssm_parameter_store_variables_tags = {
+  "Owner" = "Andrea Cannuni"
+  "Team"  = "My Team"
+}
