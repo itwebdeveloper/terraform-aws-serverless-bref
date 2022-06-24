@@ -7,13 +7,13 @@ Thanks to Bref for providing the [AWS Lambda layers for PHP](https://bref.sh/doc
 
 # Deploy a demo application
 ## Create the Terraform project folder
-1. Use `examples/simple-app` as root folder for your new application and include the `terraform-aws-serverless-laravel` inside the `modules` folder. E.g.:
+1. Use `examples/simple-app` as root folder for your new application and include the `terraform-aws-serverless-bref` inside the `modules` folder. E.g.:
     ```
-    cp -r ~/terraform-aws-serverless-laravel/examples/simple-app ~/code
+    cp -r ~/code/terraform-aws-serverless-bref/examples/simple-app ~/code
     cd ~/code/simple-app
     mkdir modules
     cd modules
-    cp -r ~/code/terraform-aws-serverless-laravel .
+    cp -r ~/code/terraform-aws-serverless-bref .
     ```
 1. Change directory to the `artifact` folder:
     ```
