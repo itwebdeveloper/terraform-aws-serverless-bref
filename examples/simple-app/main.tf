@@ -4,7 +4,8 @@ provider "aws" {
 }
 
 module "aws_resource_simple_app" {
-  source = "./modules/terraform-aws-serverless-laravel"
+  source  = "itwebdeveloper/serverless-bref/aws"
+  version = "0.1.1"
 
   api_gateway_api_tags                      = var.api_gateway_api_tags
   api_gateway_route_throttling_burst_limit  = 5
