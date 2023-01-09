@@ -70,6 +70,36 @@ variable "artifact_folder_path" {
   type = string
 }
 
+variable cloudwatch_dead_letter_queue_too_many_messages_alarm_create {
+  description = "The value determines if an alarm triggered by too many received messages in the SQS Dead Letter queue will be created"
+  type = bool
+  default = true
+}
+
+variable "cloudwatch_event_scheduled_worker_create" {
+  description = "The value determines if to create a CW Event rule for the scheduled worker"
+  type = bool
+  default = true
+}
+
+variable "cloudwatch_event_rule_scheduled_worker_enabled" {
+  description = "The value determines if to enable a CW Event rule for the scheduled worker"
+  type = bool
+  default = true
+}
+
+variable "cloudwatch_event_rule_scheduled_worker_schedule" {
+  description = "Schedule of the CW Event scheduled worker rule"
+  type = string
+  default = "rate(1 hour)"
+}
+
+variable "cloudwatch_event_rule_scheduled_worker_tags" {
+  description = "Tags of the CW Event scheduled worker rule"
+  type = map(string)
+  default = { }
+}
+
 variable "cloudwatch_log_group_artisan_retention" {
   description = "Retention in days of the logs in the Artisan CW Log Group"
   type = number
@@ -136,6 +166,28 @@ variable "lambda_function_web_timeout" {
   type = number
 }
 
+variable "lambda_function_worker_create" {
+  description = "The value determines if to deploy a worker"
+  type = bool
+  default = false
+}
+
+variable "lambda_function_worker_handler" {
+  description = "Handler of the Worker Lambda function"
+  type = string
+  default = "worker.php"
+}
+
+variable "lambda_function_worker_memory_size" {
+  description = "Size of the Worker Lambda function"
+  type = number
+}
+
+variable "lambda_function_worker_timeout" {
+  description = "Timeout value of the Worker Lambda function"
+  type = number
+}
+
 variable "lambda_layer_console_arn" {
   description = "ARN to the Laravel Console Lambda layer"
   type = string
@@ -153,6 +205,48 @@ variable "lambda_layer_php_fpm_arn" {
 
 variable "s3_bucket_storage_tags" {
   description = "Tags used on the S3 bucket for application storage"
+  type = map(string)
+  default = { }
+}
+
+variable "sns_topic_alarms_create" {
+  description = "The value determines if an SNS topic will be created"
+  type = bool
+  default = true
+}
+
+variable "sns_topic_subscription_alarms_target_create" {
+  description = "The value determines if an SNS topic subscription will be created"
+  type = bool
+  default = true
+}
+
+variable "sns_topic_subscription_alarms_target_email" {
+  description = "Email address of the recipient of CloudWatch alarm notification"
+  type = string
+  default = ""
+}
+
+variable "sqs_queue_create" {
+  description = "The value determines if an SQS queue will be created"
+  type = bool
+  default = true
+}
+
+variable "sqs_queue_tags" {
+  description = "Tags of the SQS Queue"
+  type = map(string)
+  default = { }
+}
+
+variable "sqs_dead_letter_queue_create" {
+  description = "The value determines if an SQS Dead Letter queue will be created"
+  type = bool
+  default = true
+}
+
+variable "sqs_dead_letter_queue_tags" {
+  description = "Tags of the SQS Dead Letter Queue"
   type = map(string)
   default = { }
 }

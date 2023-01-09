@@ -43,12 +43,22 @@ Thanks to Bref for providing the [AWS Lambda layers for PHP](https://bref.sh/doc
     composer require bref/bref bref/laravel-bridge --update-with-dependencies
     ```
 
-1. Clear the Laravel application cache:
+1. Install the PHP dependecies:
     ```
-    php artisan config:clear
+    composer install
+    ```
+
+1. Create a static configuration cache file:
+    ```
+    php artisan config:cache
     ```
 
 ## Build the artifact
+1. Delete the existing archive (if it exists):
+    ```
+    rm ../simple-app.zip
+    ```
+
 1. Compress the application in an archive:
     ```
     zip -r ../simple-app.zip . -x 'node_modules/*' 'public/storage/*' 'resources/assets/*' 'storage/*' 'tests/*'

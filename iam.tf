@@ -42,6 +42,17 @@ resource "aws_iam_role" "lambda_role" {
           },
           {
             Action   = [
+              "sqs:DeleteMessage",
+              "sqs:ReceiveMessage",
+              "sqs:GetQueueAttributes",
+            ]
+            Effect   = "Allow"
+            Resource = [
+              "arn:aws:sqs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:${var.application_slug}-${var.app_env}-sqs-queue",
+            ]
+          },
+          {
+            Action   = [
               "s3:*",
             ]
             Effect   = "Allow"

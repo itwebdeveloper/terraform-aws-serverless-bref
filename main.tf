@@ -64,3 +64,31 @@ resource "aws_lambda_function" "artisan" {
     }
   }
 }
+
+resource "aws_lambda_function" "worker" {
+  count                          = var.lambda_function_worker_create ? 1 : 0
+  function_name                  = "${var.application_slug}-${var.app_env}-worker"
+  handler                        = var.lambda_function_worker_handler
+  layers                         = [
+    var.lambda_layer_php_arn
+  ]
+  memory_size                    = var.lambda_function_worker_memory_size
+  role                           = aws_iam_role.lambda_role.arn
+  runtime                        = "provided.al2"
+  source_code_hash               = data.aws_s3_object.artifact.metadata["Filesha256"]
+  tags                           = var.lambda_function_tags
+  timeout                        = var.lambda_function_worker_timeout
+  s3_bucket                      = aws_s3_bucket.deployment.id
+  s3_key                         = aws_s3_object.artifact.key
+
+  environment {
+    variables = {
+      "APP_DEBUG"         = var.app_env == "dev" ? "true" : "false"
+      "APP_ENV"           = var.app_env == "dev" ? "local" : "production"
+      "APP_KEY"           = var.app_env == "dev" ? var.app_key_dev : aws_ssm_parameter.app_key_prod.value
+      "AWS_BUCKET"        = aws_s3_bucket.storage.id
+      "FILESYSTEM_DRIVER" = "s3"
+      "SQS_QUEUE"         = aws_sqs_queue.application_queue[0].url
+    }
+  }
+}

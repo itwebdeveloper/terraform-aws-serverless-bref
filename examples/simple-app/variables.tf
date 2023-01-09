@@ -20,6 +20,18 @@ variable "app_key_prod" {
   type = string
 }
 
+variable "cloudwatch_event_rule_scheduled_worker_enabled" {
+  description = "The value determines if to enable a CW Event rule for the scheduled worker"
+  type = bool
+  default = true
+}
+
+variable "cloudwatch_event_rule_scheduled_worker_tags" {
+  description = "Tags of the CW Event scheduled worker rule"
+  type = map(string)
+  default = { }
+}
+
 variable "iam_role_tags" {
   description = "Tags used on the IAM role"
   type = map(string)
@@ -28,6 +40,24 @@ variable "iam_role_tags" {
 
 variable "s3_bucket_storage_tags" {
   description = "Tags used on the S3 bucket for application storage"
+  type = map(string)
+  default = { }
+}
+
+variable "sns_topic_subscription_alarms_target_email" {
+  description = "Email address of the recipient of CloudWatch alarm notification"
+  type = string
+  default = ""
+}
+
+variable "sqs_dead_letter_queue_tags" {
+  description = "Tags of the SQS Queue"
+  type = map(string)
+  default = { }
+}
+
+variable "sqs_queue_tags" {
+  description = "Tags of the SQS Queue"
   type = map(string)
   default = { }
 }
