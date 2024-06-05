@@ -251,6 +251,12 @@ variable "sqs_queue_tags" {
   default = { }
 }
 
+variable "sqs_queue_max_receive_count" {
+  description = "The value determines the number of attempts before a message is moved to the SQS Dead Letter queue"
+  type = number
+  default = 3
+}
+
 variable "sqs_dead_letter_queue_create" {
   description = "The value determines if an SQS Dead Letter queue will be created"
   type = bool

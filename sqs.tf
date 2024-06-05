@@ -4,7 +4,7 @@ resource "aws_sqs_queue" "application_queue" {
   redrive_policy                    = var.sqs_dead_letter_queue_create ? jsonencode(
     {
       deadLetterTargetArn = aws_sqs_queue.application_dead_letter_queue[0].arn
-      maxReceiveCount     = 3
+      maxReceiveCount     = var.sqs_queue_max_receive_count
     }
   ) : null
   sqs_managed_sse_enabled           = true
