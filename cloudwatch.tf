@@ -26,6 +26,28 @@ resource "aws_cloudwatch_event_target" "scheduled_worker" {
   rule           = aws_cloudwatch_event_rule.scheduled_worker[0].name
 }
 
+resource "aws_cloudwatch_event_rule" "notify_jira_workload" {
+  count               = var.cloudwatch_event_scheduled_worker_create ? 1 : 0
+  description         = "Scheduled rule for ${var.application_name} notify-jira-workload"
+  is_enabled          = true
+  name                = "${var.application_slug}-${var.app_env}-scheduled-rule-notify-jira-workload"
+  schedule_expression = "cron(*/15 7-18 ? * MON-FRI *)"
+  tags                = var.cloudwatch_event_rule_scheduled_worker_tags
+
+  lifecycle {
+    ignore_changes = [
+      is_enabled
+    ]
+  }
+}
+
+resource "aws_cloudwatch_event_target" "notify_jira_workload" {
+  count          = var.cloudwatch_event_scheduled_worker_create ? 1 : 0
+  arn            = aws_lambda_function.artisan.arn
+  input          = "\"jira:notify-jira-workload\""
+  rule           = aws_cloudwatch_event_rule.notify_jira_workload[0].name
+}
+
 resource "aws_cloudwatch_metric_alarm" "dead_letter_queue_too_many_messages" {
   count = var.cloudwatch_dead_letter_queue_too_many_messages_alarm_create && var.sqs_dead_letter_queue_create ? 1 : 0
   alarm_actions             = var.sns_topic_alarms_create ? [

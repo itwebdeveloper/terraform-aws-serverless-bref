@@ -31,7 +31,9 @@ s3_bucket_storage_tags = {
   "Team"  = "My Team"
 }
 
-sns_topic_subscription_alarms_target_email = "joedoe.example.com"
+sns_topic_subscription_alarms_target_email = "joedoe@example.com"
+
+sns_topic_subscription_jira_workload_manager_email = "joedoesmanager@example.com"
 
 sqs_dead_letter_queue_tags = {
   "Owner" = "Andrea Cannuni"

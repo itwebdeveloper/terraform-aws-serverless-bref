@@ -209,6 +209,12 @@ variable "s3_bucket_storage_tags" {
   default = { }
 }
 
+variable "sns_jira_workload_notifications_users" {
+  description = "List of users to notify for Jira workload"
+  type        = list(map(string))
+  default = [ ]
+}
+
 variable "sns_topic_alarms_create" {
   description = "The value determines if an SNS topic will be created"
   type = bool
@@ -223,6 +229,12 @@ variable "sns_topic_subscription_alarms_target_create" {
 
 variable "sns_topic_subscription_alarms_target_email" {
   description = "Email address of the recipient of CloudWatch alarm notification"
+  type = string
+  default = ""
+}
+
+variable "sns_topic_subscription_jira_workload_manager_email" {
+  description = "Email address of the manager that should receive of Jira workload notification"
   type = string
   default = ""
 }

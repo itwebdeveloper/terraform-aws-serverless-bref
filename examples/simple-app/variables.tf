@@ -44,8 +44,20 @@ variable "s3_bucket_storage_tags" {
   default = { }
 }
 
+variable "sns_jira_workload_notifications_users" {
+  description = "List of users to notify for Jira workload"
+  type        = list(map(string))
+  default = [ ]
+}
+
 variable "sns_topic_subscription_alarms_target_email" {
   description = "Email address of the recipient of CloudWatch alarm notification"
+  type = string
+  default = ""
+}
+
+variable "sns_topic_subscription_jira_workload_manager_email" {
+  description = "Email address of the manager that should receive of Jira workload notification"
   type = string
   default = ""
 }
@@ -60,6 +72,12 @@ variable "sqs_queue_tags" {
   description = "Tags of the SQS Queue"
   type = map(string)
   default = { }
+}
+
+variable "sqs_queue_max_receive_count" {
+  description = "The value determines the number of attempts before a message is moved to the SQS Dead Letter queue"
+  type = number
+  default = 3
 }
 
 variable "ssm_parameter_store_variables_tags" {
