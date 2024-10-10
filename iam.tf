@@ -66,7 +66,6 @@ resource "aws_iam_role" "lambda_role" {
               "sns:Publish",
             ]
             Effect   = "Allow"
-            for_each    = { for u in var.sns_jira_workload_notifications_users : u.slug => u }
             Resource = [
               for u in var.sns_jira_workload_notifications_users : "arn:aws:sns:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:${var.application_slug}-${var.app_env}-notify-jira-workload-${u.slug}"
             ]
