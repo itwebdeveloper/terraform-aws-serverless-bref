@@ -92,3 +92,9 @@ resource "aws_lambda_function" "worker" {
     }
   }
 }
+
+resource "aws_lambda_event_source_mapping" "worker_sqs_trigger" {
+  count = var.sqs_queue_create ? 1 : 0
+  event_source_arn = aws_sqs_queue.application_queue[0].arn
+  function_name    = aws_lambda_function.worker[0].arn
+}
