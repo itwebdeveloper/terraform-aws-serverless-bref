@@ -70,6 +70,12 @@ variable "artifact_folder_path" {
   type = string
 }
 
+variable cloudwatch_queue_too_many_messages_alarm_create {
+  description = "The value determines if an alarm triggered by too many received messages in the SQS queue will be created"
+  type = bool
+  default = true
+}
+
 variable cloudwatch_dead_letter_queue_too_many_messages_alarm_create {
   description = "The value determines if an alarm triggered by too many received messages in the SQS Dead Letter queue will be created"
   type = bool

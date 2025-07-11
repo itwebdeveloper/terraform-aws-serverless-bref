@@ -31,7 +31,7 @@ resource "aws_cloudwatch_event_rule" "notify_jira_workload" {
   description         = "Scheduled rule for ${var.application_name} notify-jira-workload"
   is_enabled          = true
   name                = "${var.application_slug}-${var.app_env}-scheduled-rule-notify-jira-workload"
-  schedule_expression = "cron(*/15 7-18 ? * MON-FRI *)"
+  schedule_expression = "cron(*/15 * ? * MON-FRI *)"
   tags                = var.cloudwatch_event_rule_scheduled_worker_tags
 
   lifecycle {
@@ -46,6 +46,26 @@ resource "aws_cloudwatch_event_target" "notify_jira_workload" {
   arn            = aws_lambda_function.artisan.arn
   input          = "\"jira:notify-jira-workload\""
   rule           = aws_cloudwatch_event_rule.notify_jira_workload[0].name
+}
+
+resource "aws_cloudwatch_metric_alarm" "queue_too_many_messages" {
+  count = var.cloudwatch_queue_too_many_messages_alarm_create && var.sqs_queue_create ? 1 : 0
+  alarm_actions             = var.sns_topic_alarms_create ? [
+    aws_sns_topic.alarms[0].arn,
+  ] : null
+  alarm_description         = "CloudWatch alarm triggered when there are too many messages in the SQS queue."
+  alarm_name                = "${var.application_slug}-${var.app_env}-sqs-queue-too-many-messages"
+  comparison_operator       = "GreaterThanThreshold"
+  threshold                 = 3
+  evaluation_periods        = 1
+  datapoints_to_alarm       = 1
+  metric_name               = "ApproximateNumberOfMessagesVisible"
+  namespace                 = "AWS/SQS"
+  period                    = 300
+  statistic                 = "Average"
+  dimensions                = {
+    "QueueName" = aws_sqs_queue.application_queue[0].name
+  }
 }
 
 resource "aws_cloudwatch_metric_alarm" "dead_letter_queue_too_many_messages" {
