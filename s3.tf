@@ -1,5 +1,3 @@
-data "aws_canonical_user_id" "current" {}
-
 resource "random_string" "storage_bucket_suffix" {
   length           = 12
   special          = false
@@ -24,29 +22,11 @@ resource "aws_s3_bucket" "storage" {
   }
 }
 
-resource "aws_s3_bucket_acl" "storage" {
+resource "aws_s3_bucket_ownership_controls" "storage" {
   bucket = aws_s3_bucket.storage.id
 
-  access_control_policy {
-    grant {
-      permission = "FULL_CONTROL"
-
-      grantee {
-        id   = data.aws_canonical_user_id.current.id
-        type = "CanonicalUser"
-      }
-    }
-
-    owner {
-      id = data.aws_canonical_user_id.current.id
-    }
-  }
-
-  lifecycle {
-    ignore_changes = [
-      access_control_policy[0].grant,
-      access_control_policy[0].owner[0].id
-    ]
+  rule {
+    object_ownership = "BucketOwnerEnforced"
   }
 }
 
@@ -75,23 +55,11 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "deployment" {
   }
 }
 
-resource "aws_s3_bucket_acl" "deployment" {
-  bucket                = aws_s3_bucket.deployment.id
-  expected_bucket_owner = data.aws_caller_identity.current.account_id
+resource "aws_s3_bucket_ownership_controls" "deployment" {
+  bucket = aws_s3_bucket.deployment.id
 
-  access_control_policy {
-    grant {
-      permission = "FULL_CONTROL"
-
-      grantee {
-        id   = data.aws_canonical_user_id.current.id
-        type = "CanonicalUser"
-      }
-    }
-
-    owner {
-      id = data.aws_canonical_user_id.current.id
-    }
+  rule {
+    object_ownership = "BucketOwnerEnforced"
   }
 }
 
