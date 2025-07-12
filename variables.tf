@@ -85,7 +85,7 @@ variable cloudwatch_dead_letter_queue_too_many_messages_alarm_create {
 variable "cloudwatch_event_scheduled_worker_create" {
   description = "The value determines if to create a CW Event rule for the scheduled worker"
   type = bool
-  default = true
+  default = false
 }
 
 variable "cloudwatch_event_rule_scheduled_worker_enabled" {
