@@ -1,3 +1,8 @@
+variable "acm_certificate_arn" {
+  description = "ARN of the ACM certificate"
+  type = string
+}
+
 variable "api_gateway_api_tags" {
   description = "Tags used on the API Gateway API"
   type = map(string)
@@ -68,6 +73,12 @@ variable "artifact_file_name" {
 variable "artifact_folder_path" {
   description = "Path of the folder containing the artifact file, relative to the root of the project"
   type = string
+}
+
+variable "cloudfront_aliases" {
+  description = "List of aliases for the CloudFront distribution"
+  type = list(string)
+  default = [ ]
 }
 
 variable cloudwatch_queue_too_many_messages_alarm_create {
@@ -279,4 +290,11 @@ variable "ssm_parameter_store_variables_tags" {
   description = "Tags used on the SSM Parameter Store variables"
   type = map(string)
   default = { }
+}
+
+# CloudFront Variables
+variable "cloudfront_create" {
+  description = "The value determines if a CloudFront distribution will be created"
+  type = bool
+  default = false
 }
