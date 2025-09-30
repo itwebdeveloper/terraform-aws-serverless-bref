@@ -298,3 +298,9 @@ variable "cloudfront_create" {
   type = bool
   default = false
 }
+
+variable "dynamodb_table_prefix" {
+  description = "Prefix for DynamoDB table names used in IAM permissions. If not provided, will use initials from application_name"
+  type = string
+  default = null
+}

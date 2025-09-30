@@ -45,6 +45,7 @@ resource "aws_iam_role" "lambda_role" {
               "sqs:DeleteMessage",
               "sqs:ReceiveMessage",
               "sqs:GetQueueAttributes",
+              "sqs:SendMessage",
             ]
             Effect   = "Allow"
             Resource = [
@@ -53,12 +54,31 @@ resource "aws_iam_role" "lambda_role" {
           },
           {
             Action   = [
-              "s3:*",
+              "s3:GetObject",
+              "s3:PutObject",
+              "s3:DeleteObject",
+              "s3:ListBucket",
             ]
             Effect   = "Allow"
             Resource = [
               aws_s3_bucket.storage.arn,
               "${aws_s3_bucket.storage.arn}/*",
+            ]
+          },
+          {
+            Action   = [
+              "dynamodb:GetItem",
+              "dynamodb:PutItem",
+              "dynamodb:UpdateItem",
+              "dynamodb:DeleteItem",
+              "dynamodb:Query",
+              "dynamodb:Scan",
+              "dynamodb:BatchGetItem",
+              "dynamodb:BatchWriteItem",
+            ]
+            Effect   = "Allow"
+            Resource = [
+              "arn:aws:dynamodb:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${local.dynamodb_table_prefix}*",
             ]
           },
         ]

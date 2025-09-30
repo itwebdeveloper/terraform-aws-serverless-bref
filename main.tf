@@ -1,3 +1,14 @@
+locals {
+  # Extract initials from application_name for DynamoDB table prefix
+  application_initials = join("", [
+    for word in split(" ", var.application_name) : 
+    lower(substr(word, 0, 1))
+  ])
+  
+  # Use provided dynamodb_table_prefix or default to application initials
+  dynamodb_table_prefix = var.dynamodb_table_prefix != null ? var.dynamodb_table_prefix : "${local.application_initials}_"
+}
+
 data "aws_region" "current" {}
 data "aws_caller_identity" "current" {}
 data "aws_s3_object" "artifact" {
