@@ -1,4 +1,5 @@
 resource "aws_ssm_parameter" "app_key_prod" {
+  count       = var.ssm_parameter_app_key_prod_create ? 1 : 0
   description = "${var.application_name} - Production Environment - Laravel Framework parameter - Key used for encryption"
   name        = "/${var.application_slug}-prod/APP_KEY"
   tags        = var.ssm_parameter_store_variables_tags

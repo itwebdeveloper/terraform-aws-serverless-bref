@@ -12,7 +12,7 @@ resource "aws_sqs_queue" "application_queue" {
 }
 
 resource "aws_sqs_queue" "application_dead_letter_queue" {
-  count                             = var.sqs_dead_letter_queue_create ? 1 : 0
+  count                             = var.sqs_queue_create && var.sqs_dead_letter_queue_create ? 1 : 0
   name                              = "${var.application_slug}-${var.app_env}-sqs-dead-letter-queue"
   sqs_managed_sse_enabled           = true
   tags                              = var.sqs_dead_letter_queue_tags

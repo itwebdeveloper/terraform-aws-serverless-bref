@@ -1,6 +1,7 @@
 variable "acm_certificate_arn" {
   description = "ARN of the ACM certificate"
   type = string
+  default = null
 }
 
 variable "api_gateway_api_tags" {
@@ -120,6 +121,7 @@ variable "cloudwatch_event_rule_scheduled_worker_tags" {
 variable "cloudwatch_log_group_artisan_retention" {
   description = "Retention in days of the logs in the Artisan CW Log Group"
   type = number
+  default = 7
 }
 
 variable "cloudwatch_log_group_artisan_tags" {
@@ -151,6 +153,12 @@ variable "lambda_function_tags" {
   default = { }
 }
 
+variable "lambda_function_artisan_create" {
+  description = "Whether to create the Artisan Lambda function"
+  type        = bool
+  default     = true
+}
+
 variable "lambda_function_artisan_handler" {
   description = "Handler of the Artisan Lambda function"
   type = string
@@ -160,11 +168,13 @@ variable "lambda_function_artisan_handler" {
 variable "lambda_function_artisan_memory_size" {
   description = "Size of the Artisan Lambda function"
   type = number
+  default = 1024
 }
 
 variable "lambda_function_artisan_timeout" {
   description = "Timeout value of the Artisan Lambda function"
   type = number
+  default = 120
 }
 
 variable "lambda_function_web_handler" {
@@ -198,26 +208,37 @@ variable "lambda_function_worker_handler" {
 variable "lambda_function_worker_memory_size" {
   description = "Size of the Worker Lambda function"
   type = number
+  default = 1024
 }
 
 variable "lambda_function_worker_timeout" {
   description = "Timeout value of the Worker Lambda function"
   type = number
+  default = 30
 }
 
-variable "lambda_layer_console_arn" {
-  description = "ARN to the Laravel Console Lambda layer"
-  type = string
+variable "lambda_function_web_layers" {
+  description = "List of Lambda layer ARNs for the web function"
+  type        = list(string)
+  default     = []
 }
 
-variable "lambda_layer_php_arn" {
-  description = "ARN to the PHP Lambda layer"
-  type = string
+variable "lambda_function_worker_layers" {
+  description = "List of Lambda layer ARNs for the worker function"
+  type        = list(string)
+  default     = []
 }
 
-variable "lambda_layer_php_fpm_arn" {
-  description = "ARN to the PHP-FPM Lambda layer"
-  type = string
+variable "lambda_function_artisan_layers" {
+  description = "List of Lambda layer ARNs for the artisan function"
+  type        = list(string)
+  default     = []
+}
+
+variable "s3_bucket_storage_create" {
+  description = "Whether to create the S3 storage bucket"
+  type        = bool
+  default     = true
 }
 
 variable "s3_bucket_storage_tags" {
@@ -284,6 +305,12 @@ variable "sqs_dead_letter_queue_tags" {
   description = "Tags of the SQS Dead Letter Queue"
   type = map(string)
   default = { }
+}
+
+variable "ssm_parameter_app_key_prod_create" {
+  description = "Whether to create the SSM parameter for production app key"
+  type        = bool
+  default     = true
 }
 
 variable "ssm_parameter_store_variables_tags" {

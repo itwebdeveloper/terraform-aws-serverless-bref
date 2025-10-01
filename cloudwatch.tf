@@ -5,6 +5,7 @@ resource "aws_cloudwatch_log_group" "web" {
 }
 
 resource "aws_cloudwatch_log_group" "artisan" {
+  count             = var.lambda_function_artisan_create ? 1 : 0
   name              = "/aws/lambda/${var.application_slug}-${var.app_env}-artisan"
   retention_in_days = var.cloudwatch_log_group_artisan_retention
   tags              = var.cloudwatch_log_group_artisan_tags
@@ -20,8 +21,8 @@ resource "aws_cloudwatch_event_rule" "scheduled_worker" {
 }
 
 resource "aws_cloudwatch_event_target" "scheduled_worker" {
-  count          = var.cloudwatch_event_scheduled_worker_create ? 1 : 0
-  arn            = aws_lambda_function.artisan.arn
+  count          = var.cloudwatch_event_scheduled_worker_create && var.lambda_function_artisan_create ? 1 : 0
+  arn            = aws_lambda_function.artisan[0].arn
   input          = "\"queue:work --stop-when-empty\""
   rule           = aws_cloudwatch_event_rule.scheduled_worker[0].name
 }
@@ -42,8 +43,8 @@ resource "aws_cloudwatch_event_rule" "notify_jira_workload" {
 }
 
 resource "aws_cloudwatch_event_target" "notify_jira_workload" {
-  count          = var.cloudwatch_event_scheduled_worker_create ? 1 : 0
-  arn            = aws_lambda_function.artisan.arn
+  count          = var.cloudwatch_event_scheduled_worker_create && var.lambda_function_artisan_create ? 1 : 0
+  arn            = aws_lambda_function.artisan[0].arn
   input          = "\"jira:notify-jira-workload\""
   rule           = aws_cloudwatch_event_rule.notify_jira_workload[0].name
 }
@@ -69,7 +70,7 @@ resource "aws_cloudwatch_metric_alarm" "queue_too_many_messages" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "dead_letter_queue_too_many_messages" {
-  count = var.cloudwatch_dead_letter_queue_too_many_messages_alarm_create && var.sqs_dead_letter_queue_create ? 1 : 0
+  count = var.cloudwatch_dead_letter_queue_too_many_messages_alarm_create && var.sqs_queue_create && var.sqs_dead_letter_queue_create ? 1 : 0
   alarm_actions             = var.sns_topic_alarms_create ? [
     aws_sns_topic.alarms[0].arn,
   ] : null

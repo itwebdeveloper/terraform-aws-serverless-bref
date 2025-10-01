@@ -1,4 +1,5 @@
 resource "random_string" "storage_bucket_suffix" {
+  count            = var.s3_bucket_storage_create ? 1 : 0
   length           = 12
   special          = false
   upper            = false
@@ -11,7 +12,8 @@ resource "random_string" "deployment_bucket_suffix" {
 }
 
 resource "aws_s3_bucket" "storage" {
-  bucket                      = "${var.application_slug}-${var.app_env}-storage-${random_string.storage_bucket_suffix.result}"
+  count                       = var.s3_bucket_storage_create ? 1 : 0
+  bucket                      = "${var.application_slug}-${var.app_env}-storage-${random_string.storage_bucket_suffix[0].result}"
 
   tags                        = var.s3_bucket_storage_tags
 
@@ -23,7 +25,8 @@ resource "aws_s3_bucket" "storage" {
 }
 
 resource "aws_s3_bucket_ownership_controls" "storage" {
-  bucket = aws_s3_bucket.storage.id
+  count  = var.s3_bucket_storage_create ? 1 : 0
+  bucket = aws_s3_bucket.storage[0].id
 
   rule {
     object_ownership = "BucketOwnerEnforced"

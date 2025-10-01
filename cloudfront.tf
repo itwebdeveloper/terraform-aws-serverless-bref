@@ -112,65 +112,77 @@ resource "aws_cloudfront_distribution" "main" {
     viewer_protocol_policy     = "allow-all"
   }
 
-  ordered_cache_behavior {
-    allowed_methods            = [
-      "GET",
-      "HEAD",
-    ]
-    cache_policy_id            = aws_cloudfront_cache_policy.ordered[0].id
-    cached_methods             = [
-      "GET",
-      "HEAD",
-    ]
-    compress                   = true
-    path_pattern               = "/css/*"
-    target_origin_id           = aws_s3_bucket.storage.bucket_regional_domain_name
-    viewer_protocol_policy     = "redirect-to-https"
+  dynamic "ordered_cache_behavior" {
+    for_each = var.s3_bucket_storage_create ? [1] : []
+    content {
+      allowed_methods            = [
+        "GET",
+        "HEAD",
+      ]
+      cache_policy_id            = aws_cloudfront_cache_policy.ordered[0].id
+      cached_methods             = [
+        "GET",
+        "HEAD",
+      ]
+      compress                   = true
+      path_pattern               = "/css/*"
+      target_origin_id           = aws_s3_bucket.storage[0].bucket_regional_domain_name
+      viewer_protocol_policy     = "redirect-to-https"
+    }
   }
-  ordered_cache_behavior {
-    allowed_methods            = [
-      "GET",
-      "HEAD",
-    ]
-    cache_policy_id            = aws_cloudfront_cache_policy.ordered[0].id
-    cached_methods             = [
-      "GET",
-      "HEAD",
-    ]
-    compress                   = true
-    path_pattern               = "/js/*"
-    target_origin_id           = aws_s3_bucket.storage.bucket_regional_domain_name
-    viewer_protocol_policy     = "redirect-to-https"
+  dynamic "ordered_cache_behavior" {
+    for_each = var.s3_bucket_storage_create ? [1] : []
+    content {
+      allowed_methods            = [
+        "GET",
+        "HEAD",
+      ]
+      cache_policy_id            = aws_cloudfront_cache_policy.ordered[0].id
+      cached_methods             = [
+        "GET",
+        "HEAD",
+      ]
+      compress                   = true
+      path_pattern               = "/js/*"
+      target_origin_id           = aws_s3_bucket.storage[0].bucket_regional_domain_name
+      viewer_protocol_policy     = "redirect-to-https"
+    }
   }
-  ordered_cache_behavior {
-    allowed_methods            = [
-      "GET",
-      "HEAD",
-    ]
-    cache_policy_id            = aws_cloudfront_cache_policy.ordered[0].id
-    cached_methods             = [
-      "GET",
-      "HEAD",
-    ]
-    compress                   = true
-    path_pattern               = "/favicon.ico"
-    target_origin_id           = aws_s3_bucket.storage.bucket_regional_domain_name
-    viewer_protocol_policy     = "redirect-to-https"
+  dynamic "ordered_cache_behavior" {
+    for_each = var.s3_bucket_storage_create ? [1] : []
+    content {
+      allowed_methods            = [
+        "GET",
+        "HEAD",
+      ]
+      cache_policy_id            = aws_cloudfront_cache_policy.ordered[0].id
+      cached_methods             = [
+        "GET",
+        "HEAD",
+      ]
+      compress                   = true
+      path_pattern               = "/favicon.ico"
+      target_origin_id           = aws_s3_bucket.storage[0].bucket_regional_domain_name
+      viewer_protocol_policy     = "redirect-to-https"
+    }
   }
-  ordered_cache_behavior {
-    allowed_methods            = [
-      "GET",
-      "HEAD",
-    ]
-    cache_policy_id            = aws_cloudfront_cache_policy.ordered[0].id
-    cached_methods             = [
-      "GET",
-      "HEAD",
-    ]
-    compress                   = true
-    path_pattern               = "/robots.txt"
-    target_origin_id           = aws_s3_bucket.storage.bucket_regional_domain_name
-    viewer_protocol_policy     = "redirect-to-https"
+  dynamic "ordered_cache_behavior" {
+    for_each = var.s3_bucket_storage_create ? [1] : []
+    content {
+      allowed_methods            = [
+        "GET",
+        "HEAD",
+      ]
+      cache_policy_id            = aws_cloudfront_cache_policy.ordered[0].id
+      cached_methods             = [
+        "GET",
+        "HEAD",
+      ]
+      compress                   = true
+      path_pattern               = "/robots.txt"
+      target_origin_id           = aws_s3_bucket.storage[0].bucket_regional_domain_name
+      viewer_protocol_policy     = "redirect-to-https"
+    }
   }
 
   origin {
@@ -188,11 +200,14 @@ resource "aws_cloudfront_distribution" "main" {
       ]
     }
   }
-  origin {
-    domain_name              = aws_s3_bucket.storage.bucket_regional_domain_name
-    origin_access_control_id = aws_cloudfront_origin_access_control.storage[0].id
-    origin_id                = aws_s3_bucket.storage.bucket_regional_domain_name
-    origin_path              = "/public"
+  dynamic "origin" {
+    for_each = var.s3_bucket_storage_create ? [1] : []
+    content {
+      domain_name              = aws_s3_bucket.storage[0].bucket_regional_domain_name
+      origin_access_control_id = aws_cloudfront_origin_access_control.storage[0].id
+      origin_id                = aws_s3_bucket.storage[0].bucket_regional_domain_name
+      origin_path              = "/public"
+    }
   }
 
   restrictions {
@@ -202,11 +217,21 @@ resource "aws_cloudfront_distribution" "main" {
     }
   }
 
-  viewer_certificate {
-    acm_certificate_arn            = var.acm_certificate_arn
-    cloudfront_default_certificate = false
-    iam_certificate_id             = null
-    minimum_protocol_version       = "TLSv1.2_2021"
-    ssl_support_method             = "sni-only"
+  dynamic "viewer_certificate" {
+    for_each = var.acm_certificate_arn != null ? [1] : []
+    content {
+      acm_certificate_arn            = var.acm_certificate_arn
+      cloudfront_default_certificate = false
+      iam_certificate_id             = null
+      minimum_protocol_version       = "TLSv1.2_2021"
+      ssl_support_method             = "sni-only"
+    }
+  }
+
+  dynamic "viewer_certificate" {
+    for_each = var.acm_certificate_arn == null ? [1] : []
+    content {
+      cloudfront_default_certificate = true
+    }
   }
 }

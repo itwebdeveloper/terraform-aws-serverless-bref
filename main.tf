@@ -19,9 +19,7 @@ data "aws_s3_object" "artifact" {
 resource "aws_lambda_function" "web" {
   function_name                  = "${var.application_slug}-${var.app_env}-web"
   handler                        = var.lambda_function_web_handler
-  layers                         = [
-    var.lambda_layer_php_fpm_arn,
-  ]
+  layers                         = var.lambda_function_web_layers
   memory_size                    = var.lambda_function_web_memory_size
   role                           = aws_iam_role.lambda_role.arn
   runtime                        = "provided.al2"
@@ -35,9 +33,9 @@ resource "aws_lambda_function" "web" {
     variables = {
       "APP_DEBUG"         = var.app_env == "dev" ? "true" : "false"
       "APP_ENV"           = var.app_env == "dev" ? "local" : "production"
-      "APP_KEY"           = var.app_env == "dev" ? var.app_key_dev : aws_ssm_parameter.app_key_prod.value
-      "AWS_BUCKET"        = aws_s3_bucket.storage.id
-      "FILESYSTEM_DRIVER" = "s3"
+      "APP_KEY"           = var.app_env == "dev" ? var.app_key_dev : (var.ssm_parameter_app_key_prod_create ? aws_ssm_parameter.app_key_prod[0].value : var.app_key_prod)
+      "AWS_BUCKET"        = var.s3_bucket_storage_create ? aws_s3_bucket.storage[0].id : ""
+      "FILESYSTEM_DRIVER" = var.s3_bucket_storage_create ? "s3" : "local"
     }
   }
 }
@@ -50,12 +48,10 @@ resource "aws_lambda_permission" "api_gateway" {
 }
 
 resource "aws_lambda_function" "artisan" {
+  count                          = var.lambda_function_artisan_create ? 1 : 0
   function_name                  = "${var.application_slug}-${var.app_env}-artisan"
   handler                        = var.lambda_function_artisan_handler
-  layers                         = [
-    var.lambda_layer_php_arn,
-    var.lambda_layer_console_arn,
-  ]
+  layers                         = var.lambda_function_artisan_layers
   memory_size                    = var.lambda_function_artisan_memory_size
   role                           = aws_iam_role.lambda_role.arn
   runtime                        = "provided.al2"
@@ -69,20 +65,18 @@ resource "aws_lambda_function" "artisan" {
     variables = {
       "APP_DEBUG"         = var.app_env == "dev" ? "true" : "false"
       "APP_ENV"           = var.app_env == "dev" ? "local" : "production"
-      "APP_KEY"           = var.app_env == "dev" ? var.app_key_dev : aws_ssm_parameter.app_key_prod.value
-      "AWS_BUCKET"        = aws_s3_bucket.storage.id
-      "FILESYSTEM_DRIVER" = "s3"
+      "APP_KEY"           = var.app_env == "dev" ? var.app_key_dev : (var.ssm_parameter_app_key_prod_create ? aws_ssm_parameter.app_key_prod[0].value : var.app_key_prod)
+      "AWS_BUCKET"        = var.s3_bucket_storage_create ? aws_s3_bucket.storage[0].id : ""
+      "FILESYSTEM_DRIVER" = var.s3_bucket_storage_create ? "s3" : "local"
     }
   }
 }
 
 resource "aws_lambda_function" "worker" {
-  count                          = var.lambda_function_worker_create ? 1 : 0
+  count                          = var.sqs_queue_create && var.lambda_function_worker_create ? 1 : 0
   function_name                  = "${var.application_slug}-${var.app_env}-worker"
   handler                        = var.lambda_function_worker_handler
-  layers                         = [
-    var.lambda_layer_php_arn
-  ]
+  layers                         = var.lambda_function_worker_layers
   memory_size                    = var.lambda_function_worker_memory_size
   role                           = aws_iam_role.lambda_role.arn
   runtime                        = "provided.al2"
@@ -96,16 +90,16 @@ resource "aws_lambda_function" "worker" {
     variables = {
       "APP_DEBUG"         = var.app_env == "dev" ? "true" : "false"
       "APP_ENV"           = var.app_env == "dev" ? "local" : "production"
-      "APP_KEY"           = var.app_env == "dev" ? var.app_key_dev : aws_ssm_parameter.app_key_prod.value
-      "AWS_BUCKET"        = aws_s3_bucket.storage.id
-      "FILESYSTEM_DRIVER" = "s3"
+      "APP_KEY"           = var.app_env == "dev" ? var.app_key_dev : (var.ssm_parameter_app_key_prod_create ? aws_ssm_parameter.app_key_prod[0].value : var.app_key_prod)
+      "AWS_BUCKET"        = var.s3_bucket_storage_create ? aws_s3_bucket.storage[0].id : ""
+      "FILESYSTEM_DRIVER" = var.s3_bucket_storage_create ? "s3" : "local"
       "SQS_QUEUE"         = aws_sqs_queue.application_queue[0].url
     }
   }
 }
 
 resource "aws_lambda_event_source_mapping" "worker_sqs_trigger" {
-  count = var.sqs_queue_create ? 1 : 0
+  count = var.sqs_queue_create && var.lambda_function_worker_create ? 1 : 0
   event_source_arn = aws_sqs_queue.application_queue[0].arn
   function_name    = aws_lambda_function.worker[0].arn
 }
