@@ -86,7 +86,8 @@ resource "aws_iam_role" "lambda_role" {
                 "${aws_s3_bucket.storage[0].arn}/*",
               ]
             }
-          ] : []
+          ] : [],
+          var.additional_iam_policy_statements
         )
         Version   = "2012-10-17"
       }

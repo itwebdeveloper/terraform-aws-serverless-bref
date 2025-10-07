@@ -331,3 +331,13 @@ variable "dynamodb_table_prefix" {
   type = string
   default = null
 }
+
+variable "additional_iam_policy_statements" {
+  description = "Additional IAM policy statements to attach to the Lambda execution role"
+  type = list(object({
+    Effect   = string
+    Action   = list(string)
+    Resource = list(string)
+  }))
+  default = []
+}
