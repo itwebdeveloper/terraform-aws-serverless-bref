@@ -22,7 +22,7 @@ resource "aws_lambda_function" "web" {
   layers                         = var.lambda_function_web_layers
   memory_size                    = var.lambda_function_web_memory_size
   role                           = aws_iam_role.lambda_role.arn
-  runtime                        = "provided.al2"
+  runtime                        = var.lambda_function_web_runtime
   source_code_hash               = data.aws_s3_object.artifact.metadata["Filesha256"]
   tags                           = var.lambda_function_tags
   timeout                        = var.lambda_function_web_timeout
@@ -54,7 +54,7 @@ resource "aws_lambda_function" "artisan" {
   layers                         = var.lambda_function_artisan_layers
   memory_size                    = var.lambda_function_artisan_memory_size
   role                           = aws_iam_role.lambda_role.arn
-  runtime                        = "provided.al2"
+  runtime                        = var.lambda_function_artisan_runtime
   source_code_hash               = data.aws_s3_object.artifact.metadata["Filesha256"]
   tags                           = var.lambda_function_tags
   timeout                        = var.lambda_function_artisan_timeout
@@ -79,7 +79,7 @@ resource "aws_lambda_function" "worker" {
   layers                         = var.lambda_function_worker_layers
   memory_size                    = var.lambda_function_worker_memory_size
   role                           = aws_iam_role.lambda_role.arn
-  runtime                        = "provided.al2"
+  runtime                        = var.lambda_function_worker_runtime
   source_code_hash               = data.aws_s3_object.artifact.metadata["Filesha256"]
   tags                           = var.lambda_function_tags
   timeout                        = var.lambda_function_worker_timeout

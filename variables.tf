@@ -341,3 +341,21 @@ variable "additional_iam_policy_statements" {
   }))
   default = []
 }
+
+variable "lambda_function_web_runtime" {
+  description = "The runtime for the Lambda web function"
+  type        = string
+  default     = "python3.10"
+}
+
+variable "lambda_function_artisan_runtime" {
+  description = "The runtime for the Lambda artisan function"
+  type        = string
+  default     = "provided.al2"
+}
+
+variable "lambda_function_worker_runtime" {
+  description = "The runtime for the Lambda worker function"
+  type        = string
+  default     = "provided.al2"
+}
