@@ -2,6 +2,25 @@ resource "aws_apigatewayv2_api" "web" {
   name                         = "${var.app_env}-${var.application_slug}"
   protocol_type                = "HTTP"
   tags                         = var.api_gateway_api_tags
+
+  # Add CORS configuration when specific methods are defined (not $default)
+  dynamic "cors_configuration" {
+    for_each = var.api_gateway_allowed_methods != ["$default"] ? [1] : []
+    content {
+      allow_credentials = false
+      allow_headers = [
+        "Content-Type",
+        "X-Amz-Date",
+        "Authorization",
+        "X-Api-Key",
+        "X-Amz-Security-Token"
+      ]
+      allow_methods = var.api_gateway_allowed_methods
+      allow_origins = ["*"]
+      expose_headers = []
+      max_age = 300
+    }
+  }
 }
 
 resource "aws_apigatewayv2_integration" "web" {
@@ -12,9 +31,10 @@ resource "aws_apigatewayv2_integration" "web" {
 }
 
 resource "aws_apigatewayv2_route" "web" {
-  api_id               = aws_apigatewayv2_api.web.id
-  route_key            = "$default"
-  target               = "integrations/${aws_apigatewayv2_integration.web.id}"
+  for_each = toset(var.api_gateway_allowed_methods)
+  api_id   = aws_apigatewayv2_api.web.id
+  route_key = each.value == "$default" ? "$default" : "${each.value} /"
+  target   = "integrations/${aws_apigatewayv2_integration.web.id}"
 }
 
 resource "aws_apigatewayv2_stage" "web" {
@@ -28,3 +48,5 @@ resource "aws_apigatewayv2_stage" "web" {
     throttling_rate_limit    = var.api_gateway_route_throttling_rate_limit
   }
 }
+
+

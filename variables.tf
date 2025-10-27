@@ -32,6 +32,12 @@ variable "api_gateway_stage_tags" {
   default = { }
 }
 
+variable "api_gateway_allowed_methods" {
+  description = "List of HTTP methods allowed for the API Gateway. Use ['$default'] for all methods, or specify specific methods like ['POST', 'OPTIONS']"
+  type        = list(string)
+  default     = ["$default"]
+}
+
 variable "app_env" {
   description = "Application environment"
   type = string
