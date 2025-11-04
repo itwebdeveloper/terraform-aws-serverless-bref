@@ -87,6 +87,18 @@ resource "aws_iam_role" "lambda_role" {
               ]
             }
           ] : [],
+          length(var.sns_jira_workload_notifications_users) > 0 ? [
+            {
+              Action   = [
+                "sns:Publish",
+              ]
+              Effect   = "Allow"
+              Resource = [
+                for user in var.sns_jira_workload_notifications_users : 
+                "arn:aws:sns:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:${var.application_slug}-${var.app_env}-notify-jira-workload-${user.slug}"
+              ]
+            }
+          ] : [],
           var.additional_iam_policy_statements
         )
         Version   = "2012-10-17"
