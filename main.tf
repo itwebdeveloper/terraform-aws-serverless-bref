@@ -30,13 +30,16 @@ resource "aws_lambda_function" "web" {
   s3_key                         = aws_s3_object.artifact.key
 
   environment {
-    variables = {
-      "APP_DEBUG"         = var.app_env == "dev" ? "true" : "false"
-      "APP_ENV"           = var.app_env == "dev" ? "local" : "production"
-      "APP_KEY"           = var.app_env == "dev" ? var.app_key_dev : (var.ssm_parameter_app_key_prod_create ? aws_ssm_parameter.app_key_prod[0].value : var.app_key_prod)
-      "AWS_BUCKET"        = var.s3_bucket_storage_create ? aws_s3_bucket.storage[0].id : ""
-      "FILESYSTEM_DRIVER" = var.s3_bucket_storage_create ? "s3" : "local"
-    }
+    variables = merge(
+      {
+        "APP_DEBUG"         = var.app_env == "dev" ? "true" : "false"
+        "APP_ENV"           = var.app_env == "dev" ? "local" : "production"
+        "APP_KEY"           = var.app_env == "dev" ? var.app_key_dev : (var.ssm_parameter_app_key_prod_create ? aws_ssm_parameter.app_key_prod[0].value : var.app_key_prod)
+        "AWS_BUCKET"        = var.s3_bucket_storage_create ? aws_s3_bucket.storage[0].id : ""
+        "FILESYSTEM_DRIVER" = var.s3_bucket_storage_create ? "s3" : "local"
+      },
+      var.lambda_function_web_environment_variables
+    )
   }
 }
 

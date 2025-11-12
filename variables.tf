@@ -365,3 +365,9 @@ variable "lambda_function_worker_runtime" {
   type        = string
   default     = "provided.al2"
 }
+
+variable "lambda_function_web_environment_variables" {
+  description = "Additional environment variables for the Lambda web function. These will be merged with the default environment variables."
+  type        = map(string)
+  default     = {}
+}
